@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Personal Health Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Kanit', sans-serif; }
+        body { background-color: #f8fafc; color: #334155; padding: 24px 16px; }
+        .dashboard-container { max-width: 1000px; margin: 0 auto; }
+        
+        header { margin-bottom: 24px; }
+        header h1 { font-size: 22px; color: #0f172a; font-weight: 600; }
+        header p { color: #64748b; font-size: 14px; margin-top: 4px; }
+        
+        .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 24px; }
+        .kpi-card { background: #ffffff; padding: 18px 20px; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; }
+        .kpi-card .title { font-size: 13px; color: #64748b; font-weight: 500; margin-bottom: 6px; }
+        .kpi-card .value { font-size: 24px; font-weight: 600; color: #0f172a; }
+        .kpi-card .unit { font-size: 13px; font-weight: 400; color: #64748b; }
+        
+        .content-grid { display: grid; grid-template-columns: 1fr; gap: 20px; }
+        @media (min-width: 768px) { .content-grid { grid-template-columns: 1.1fr 0.9fr; } }
+        
+        .card { background: #ffffff; padding: 20px; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; }
+        .card h2 { font-size: 16px; font-weight: 600; color: #0f172a; margin-bottom: 16px; }
+        
+        table { width: 100%; border-collapse: collapse; font-size: 13px; }
+        th, td { padding: 10px 8px; text-align: left; border-bottom: 1px solid #f1f5f9; }
+        th { color: #64748b; font-weight: 500; background-color: #f8fafc; }
+        tr:last-child td { border-bottom: none; }
+        
+        .badge { background-color: #e0f2fe; color: #0284c7; padding: 4px 8px; border-radius: 6px; font-size: 12px; font-weight: 500; display: inline-block; }
+        .badge-run { background-color: #fef3c7; color: #d97706; }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <header>
+            <h1>Personal Health Dashboard</h1>
+            <p>รายงานสรุปสุขภาพ 7 วันย้อนหลัง (7 - 13 ก.ย.) | น้ำหนักตัว 85 กก.</p>
+        </header>
+
+        <!-- KPI Section -->
+        <div class="kpi-grid">
+            <div class="kpi-card">
+                <div class="title">วันออกกำลังกาย</div>
+                <div class="value">7 <span class="unit">/ 7 วัน</span></div>
+            </div>
+            <div class="kpi-card">
+                <div class="title">เวลารวมออกกำลังกาย</div>
+                <div class="value">300 <span class="unit">นาที (5 ชม.)</span></div>
+            </div>
+            <div class="kpi-card">
+                <div class="title">ชั่วโมงนอนเฉลี่ย</div>
+                <div class="value">6.6 <span class="unit">ชม./วัน</span></div>
+            </div>
+            <div class="kpi-card">
+                <div class="title">น้ำดื่มเฉลี่ย</div>
+                <div class="value">1.54 <span class="unit">ลิตร/วัน</span></div>
+            </div>
+        </div>
+
+        <!-- Content Section -->
+        <div class="content-grid">
+            <div class="card">
+                <h2>แนวโน้มการนอนหลับและการดื่มน้ำ</h2>
+                <canvas id="healthChart" height="220"></canvas>
+            </div>
+            
+            <div class="card">
+                <h2>รายการกิจกรรมประจำวัน</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>วันที่</th>
+                            <th>กิจกรรม</th>
+                            <th>นอน</th>
+                            <th>น้ำ</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>7 ก.ย. (จ)</td><td><span class="badge badge-run">วิ่ง 30 นาที</span></td><td>7.2 ชม.</td><td>1.8 ลิตร</td></tr>
+                        <tr><td>8 ก.ย. (อ)</td><td><span class="badge">ปั่นจักรยาน 45 นาที</span></td><td>6.5 ชม.</td><td>1.5 ลิตร</td></tr>
+                        <tr><td>9 ก.ย. (พ)</td><td><span class="badge">ปั่นจักรยาน 45 นาที</span></td><td>6.5 ชม.</td><td>1.5 ลิตร</td></tr>
+                        <tr><td>10 ก.ย. (พฤ)</td><td><span class="badge">ปั่นจักรยาน 45 นาที</span></td><td>6.5 ชม.</td><td>1.5 ลิตร</td></tr>
+                        <tr><td>11 ก.ย. (ศ)</td><td><span class="badge">ปั่นจักรยาน 45 นาที</span></td><td>6.5 ชม.</td><td>1.5 ลิตร</td></tr>
+                        <tr><td>12 ก.ย. (ส)</td><td><span class="badge">ปั่นจักรยาน 45 นาที</span></td><td>6.5 ชม.</td><td>1.5 ลิตร</td></tr>
+                        <tr><td>13 ก.ย. (อา)</td><td><span class="badge">ปั่นจักรยาน 45 นาที</span></td><td>6.5 ชม.</td><td>1.5 ลิตร</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const ctx = document.getElementById('healthChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ['7 ก.ย.', '8 ก.ย.', '9 ก.ย.', '10 ก.ย.', '11 ก.ย.', '12 ก.ย.', '13 ก.ย.'],
+                datasets: [
+                    {
+                        label: 'การนอน (ชม.)',
+                        data: [7.2, 6.5, 6.5, 6.5, 6.5, 6.5, 6.5],
+                        borderColor: '#6366f1',
+                        backgroundColor: 'rgba(99, 102, 241, 0.1)',
+                        borderWidth: 2,
+                        tension: 0.3,
+                        yAxisID: 'y'
+                    },
+                    {
+                        label: 'น้ำดื่ม (ลิตร)',
+                        data: [1.8, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5],
+                        borderColor: '#0284c7',
+                        backgroundColor: 'rgba(2, 132, 199, 0.1)',
+                        borderWidth: 2,
+                        tension: 0.3,
+                        yAxisID: 'y1'
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                interaction: { mode: 'index', intersect: false },
+                plugins: {
+                    legend: { position: 'bottom', labels: { boxWidth: 12, font: { family: 'Kanit' } } }
+                },
+                scales: {
+                    y: {
+                        type: 'linear',
+                        display: true,
+                        position: 'left',
+                        min: 0,
+                        max: 10,
+                        title: { display: true, text: 'ชั่วโมง' }
+                    },
+                    y1: {
+                        type: 'linear',
+                        display: true,
+                        position: 'right',
+                        min: 0,
+                        max: 4,
+                        grid: { drawOnChartArea: false },
+                        title: { display: true, text: 'ลิตร' }
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
